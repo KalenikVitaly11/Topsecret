@@ -1,0 +1,66 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/cardview_light_background"
+    android:gravity="center_horizontal"
+    android:orientation="vertical"
+    android:padding="16dp"
+    tools:context="com.example.vitaly.topsecret.LoginActivity">
+
+
+    <TextView
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="120dp"
+        android:text="@string/login_text"
+        android:fontFamily="sans-serif"
+        android:textAlignment="center"
+        android:textColor="@color/text_333333"
+        android:textSize="20sp"
+        android:textStyle="normal" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="80dp">
+
+        <com.rengwuxian.materialedittext.MaterialEditText
+            android:id="@+id/pin"
+            android:layout_width="180dp"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:cursorVisible="false"
+            android:fontFamily="sans-serif"
+            android:hint="PIN"
+            android:inputType="numberPassword"
+            android:textAlignment="center"
+            app:met_floatingLabel="none"
+            app:met_maxCharacters="4" />
+
+        <ImageButton
+            android:id="@+id/login_done"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="7dp"
+            android:layout_toEndOf="@id/pin"
+            android:background="@android:color/transparent"
+            android:src="@mipmap/ic_done_black_24dp" />
+    </RelativeLayout>
+
+    <com.rengwuxian.materialedittext.MaterialEditText
+        android:id="@+id/pin_hint"
+        android:layout_width="180dp"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:cursorVisible="false"
+        android:fontFamily="sans-serif"
+        android:hint="Подсказка"
+        android:inputType="text"
+        android:textAlignment="center"
+        app:met_floatingLabel="none" />
+</LinearLayout>
