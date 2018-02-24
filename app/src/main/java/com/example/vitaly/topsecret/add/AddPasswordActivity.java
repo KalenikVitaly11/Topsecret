@@ -1,4 +1,4 @@
-package com.example.vitaly.topsecret;
+package com.example.vitaly.topsecret.add;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -6,17 +6,20 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
+import com.example.vitaly.topsecret.PasswordElement;
+import com.example.vitaly.topsecret.PasswordModel;
+import com.example.vitaly.topsecret.R;
 import com.rengwuxian.materialedittext.MaterialEditText;
 
-import io.realm.Realm;
-
-public class AddPasswordActivity extends AppCompatActivity {
+public class AddPasswordActivity extends AppCompatActivity implements AddPasswordView {
 
     MaterialEditText organisation;
     MaterialEditText login;
     MaterialEditText password;
     MaterialEditText extraInfo;
     MaterialEditText link;
+
+    private AddPasswordPresenter presenter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,6 +35,9 @@ public class AddPasswordActivity extends AppCompatActivity {
         password = (MaterialEditText) findViewById(R.id.add_password);
         extraInfo = (MaterialEditText) findViewById(R.id.add_extra_info);
         link = (MaterialEditText) findViewById(R.id.add_link);
+
+        PasswordModel model = new PasswordModel(this);
+        presenter = new AddPasswordPresenter(model, this);
     }
 
     @Override
@@ -48,25 +54,39 @@ public class AddPasswordActivity extends AppCompatActivity {
                 finish();
                 return true;
             case R.id.finish_editing:
-                if (organisation.getText().toString().isEmpty()) {
-                    organisation.setError("Надо заполнить");
-                } else if (login.getText().toString().isEmpty()) {
-                    login.setError("Надо заполнить");
-                } else if (password.getText().toString().isEmpty()) {
-                    password.setError("Надо заполнить");
-                } else {
-
-                    PasswordElement passwordElement = new PasswordElement(organisation.getText().toString(), login.getText().toString(), password.getText().toString(),
-                            extraInfo.getText().toString(), link.getText().toString());
-
-                    Realm.init(this);
-                    Realm.getDefaultInstance().executeTransaction(realm -> {
-                        realm.insert(passwordElement);
-                    });
-                    finish();
-                }
+                presenter.add();
+                finish();
                 return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public PasswordElement getPassword() {
+        PasswordElement passwordElement = new PasswordElement(organisation.getText().toString(), login.getText().toString(), password.getText().toString(),
+                extraInfo.getText().toString(), link.getText().toString());
+        return passwordElement;
+    }
+
+    @Override
+    public boolean checkData() {
+        if (organisation.getText().toString().isEmpty()) {
+            organisation.setError("Надо заполнить");
+            return false;
+        }
+        if (login.getText().toString().isEmpty()) {
+            login.setError("Надо заполнить");
+            return false;
+        }
+        if (password.getText().toString().isEmpty()) {
+            password.setError("Надо заполнить");
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public void completed() {
+        finish();
     }
 }

@@ -1,24 +1,20 @@
-package com.example.vitaly.topsecret;
+package com.example.vitaly.topsecret.registration;
 
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 
+import com.example.vitaly.topsecret.storage.MainActivity;
+import com.example.vitaly.topsecret.PasswordModel;
+import com.example.vitaly.topsecret.R;
 import com.rengwuxian.materialedittext.MaterialEditText;
 
-import static android.content.Context.MODE_PRIVATE;
 
-
-public class RegistrationFragment extends Fragment  implements View.OnClickListener{
+public class RegistrationFragment extends Fragment implements RegistrationView {
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
@@ -28,6 +24,9 @@ public class RegistrationFragment extends Fragment  implements View.OnClickListe
     MaterialEditText pin;
     MaterialEditText hint;
     ImageButton done;
+
+    PasswordModel model;
+    RegistrationPresenter presenter;
 
     public RegistrationFragment() {
         // Required empty public constructor
@@ -56,31 +55,56 @@ public class RegistrationFragment extends Fragment  implements View.OnClickListe
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_registration, container, false);
-        getActivity().setTitle(R.string.login_title);
+        if (getActivity() != null)
+            getActivity().setTitle(R.string.login_title);
         pin = (MaterialEditText) view.findViewById(R.id.pin);
         hint = (MaterialEditText) view.findViewById(R.id.pin_hint);
         done = (ImageButton) view.findViewById(R.id.login_done);
-        done.setOnClickListener(this);
+
+        model = new PasswordModel(getContext());
+        presenter = new RegistrationPresenter(this, model);
+
+        done.setOnClickListener(clickedView ->
+            presenter.goToStorage()
+        );
         return view;
     }
 
     @Override
-    public void onClick(View view) {
-        switch (view.getId()){
-            case R.id.login_done:
-                if(pin.getText().toString().isEmpty()){
-                    pin.setError("Надо заполнить!");
-                } else if (hint.getText().toString().isEmpty()){
-                    hint.setError("Надо заполнить!");
-                } else if(pin.isCharactersCountValid()){
-                    PreferencesHelper.setPin(getActivity(), pin.getText().toString());
-                    PreferencesHelper.setHint(getActivity(), hint.getText().toString());
+    public String getHint() {
+        return hint.getText().toString();
+    }
 
-                    Intent intent = new Intent(getContext(), MainActivity.class);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                    startActivity(intent);
-                }
-                break;
+    @Override
+    public String getPin() {
+        return pin.getText().toString();
+    }
+
+
+    @Override
+    public boolean checkData() {
+        if (pin.getText().toString().isEmpty()) {
+            pin.setError("Надо заполнить!");
+            return false;
         }
+
+        if (hint.getText().toString().isEmpty()) {
+            hint.setError("Надо заполнить!");
+            return false;
+        }
+
+        if (pin.length() == 4) {
+            return true;
+        } else {
+            pin.setError("Необходимо 4 символа");
+            return false;
+        }
+    }
+
+    @Override
+    public void openStorageScreen() {
+        Intent intent = new Intent(getContext(), MainActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
     }
 }

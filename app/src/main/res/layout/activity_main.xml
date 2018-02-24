@@ -1,42 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_coordinator"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="match_parent"
+    android:background="@color/cardview_light_background">
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recycler_view_passwords"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layoutManager="LinearLayoutManager"
-        tools:context=".MainActivity"
-        tools:listitem="@layout/cardview_password_element" />
+        tools:context=".storage.MainActivity"
+        tools:listitem="@layout/cardview_password_element"/>
+
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/add_password"
         android:layout_width="56dp"
         android:layout_height="56dp"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentEnd="true"
-        android:layout_marginBottom="16dp"
-        android:layout_marginEnd="6dp"
-        app:useCompatPadding="true"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="16dp"
         android:src="@mipmap/ic_add_black_24dp"
         app:backgroundTint="@color/cardview_light_background"
+        app:fabSize="normal"
         app:pressedTranslationZ="0dp"
-        app:fabSize="normal"/>
+        app:useCompatPadding="true" />
 
     <TextView
         android:id="@+id/empty_db"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
+        android:layout_gravity="center"
         android:layout_margin="60dp"
         android:fontFamily="sans-serif"
         android:text="@string/empty_database"
         android:textAlignment="center"
         android:textColor="@color/text_949494"
         android:textSize="16sp"
-        android:visibility="invisible"/>
-</RelativeLayout>
+        android:visibility="invisible" />
+</android.support.design.widget.CoordinatorLayout>

@@ -3,6 +3,7 @@ package com.example.vitaly.topsecret;
 import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.gesture.Gesture;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -24,6 +25,7 @@ import net.cachapa.expandablelayout.ExpandableLayout;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 
 import io.realm.Realm;
 import io.realm.RealmResults;
@@ -31,16 +33,15 @@ import io.realm.RealmResults;
 
 public class PasswordRecyclerViewAdapter extends RecyclerView.Adapter<PasswordRecyclerViewAdapter.ViewHolder> {
     private ArrayList<PasswordElement> dataPassword;
-    private ArrayList<PasswordElement> selectedItems;
     private Context mContext;
-    int rotationAngle = 0;
+    private int rotationAngle = 0;
+    private int lastRemovedElement;
     private boolean multiSelect = false;
 
-    public PasswordRecyclerViewAdapter(Context context) {
+    public PasswordRecyclerViewAdapter(Context context, ArrayList<PasswordElement> dataPassword) {
         mContext = context;
-        dataPassword = new ArrayList<PasswordElement>();
-        selectedItems = new ArrayList<PasswordElement>();
-        updateData();
+        this.dataPassword = dataPassword;
+        sort();
     }
 
     @Override
@@ -86,21 +87,24 @@ public class PasswordRecyclerViewAdapter extends RecyclerView.Adapter<PasswordRe
         return dataPassword;
     }
 
-    public void updateData() {
-        dataPassword.clear();
-        Realm.init(mContext);
-        Realm realm = Realm.getDefaultInstance();
-        RealmResults<PasswordElement> results = realm.where(PasswordElement.class).findAll();
-        dataPassword.addAll(realm.copyFromRealm(results));
-        Collections.sort(dataPassword, new CustomComparator());
-        notifyDataSetChanged();
-    }
-
-
-
     public void removeElement(int position){
         dataPassword.remove(position);
+        notifyItemRemoved(position);
+        lastRemovedElement = position;
     }
+
+    public void addElement(PasswordElement passwordElement){
+        dataPassword.add(lastRemovedElement, passwordElement);
+        notifyItemInserted(lastRemovedElement);
+    }
+
+    public void sort(){
+        Collections.sort(dataPassword, (@NonNull PasswordElement passwordElement1, @NonNull PasswordElement passwordElement2) ->
+                passwordElement1.getOrganisation().compareToIgnoreCase(passwordElement2.getOrganisation()));
+    }
+
+
+
 
     @Override
     public int getItemCount() {
@@ -122,7 +126,7 @@ public class PasswordRecyclerViewAdapter extends RecyclerView.Adapter<PasswordRe
         private ImageView editIcon;
         private ImageView deleteIcon;
 
-        public ViewHolder(View itemView) {
+        ViewHolder(View itemView) {
             super(itemView);
             expandableLayout = (ExpandableLayout) itemView.findViewById(R.id.password_expandable);
             header = (RelativeLayout) itemView.findViewById(R.id.password_header);
@@ -164,11 +168,11 @@ public class PasswordRecyclerViewAdapter extends RecyclerView.Adapter<PasswordRe
             return password;
         }
 
-        public ImageView getEditIcon(){
+        ImageView getEditIcon(){
             return editIcon;
         }
 
-        public ImageView getDeleteIcon(){
+        ImageView getDeleteIcon(){
             return deleteIcon;
         }
 
@@ -176,7 +180,7 @@ public class PasswordRecyclerViewAdapter extends RecyclerView.Adapter<PasswordRe
             return this.cardViewLayout;
         }
 
-        public void setClickListener(ItemClickListener itemClickListener) {
+        void setClickListener(ItemClickListener itemClickListener) {
             this.clickListener = itemClickListener;
         }
 
